@@ -5,14 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Animation Test</title>
+    <style>
+        .b{
+            width: 100px;
+            height: 100px;
+            background-color: lightblue;
+            margin: 20px; 
+        }
+        
+    </style>
 </head>
 <body>
+    <input type="submit" id="btn">
+    <input type="submit" id="btn2">
     <div id="a" class="b"></div>
-    <div class="b"></div>
-    
+
     <script src="animation.js"></script>
     <script>
-        console.log($('.b').el)
+        let btn = $('#btn').el[0],
+            div = $(document.getElementById('a')),
+            btn2 = $('#btn2').el[0]
+        btn.onclick = function() {
+            div.animate('width: 200px;background-color: green')
+        }
+        btn2.onclick = function() {
+            div.animate('height: 200px;background-color: yellow')
+        }
     </script>
 </body>
 </html>
