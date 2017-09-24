@@ -26,7 +26,7 @@ let $ = (function() {
                 deleteCSSRule(`.animate${this.id}`)
                 deleteKeyframe(`play${this.id}`)
             })
-            addCSSRule(`.animate${this.id}{animation: play${this.id} 1s;animation-fill-mode:forwards}`)
+            addCSSRule(`.animate${this.id}{animation: play${this.id} 1s;}`)
             addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
             this.el.classList.add(`animate${this.id}`)
         }
