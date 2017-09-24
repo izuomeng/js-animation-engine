@@ -49,8 +49,7 @@ let $ = (function() {
             if(len <= 0){
                 return
             }
-            let i = 0,
-                fireAnimation = () => {
+            let fireAnimation = () => {
                     if(animationList.length > 0){
                         let {cssText, duration, easing, callback} = animationList[0]
                         this.animate(false, cssText, duration, easing, callback)
