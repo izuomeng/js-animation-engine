@@ -19,16 +19,48 @@ let $ = (function() {
     }
     $.prototype = {
         constructor: $,
-        animate(cssText) {
-            window.addEventListener('animationend', ()=>{
-                this.el.style.cssText += cssText
-                this.el.classList.remove(`animate${this.id}`)
-                deleteCSSRule(`.animate${this.id}`)
-                deleteKeyframe(`play${this.id}`)
-            })
-            addCSSRule(`.animate${this.id}{animation: play${this.id} 1s;}`)
-            addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
-            this.el.classList.add(`animate${this.id}`)
+        animate(inQueue, cssText, duration = '1s', easing = 'ease', callback = ()=>{}) {
+            if(!inQueue){
+                let removeAnimation = (event) => {
+                    this.el.style.cssText += cssText
+                    this.el.classList.remove(`animate${this.id}`)
+                    deleteCSSRule(`.animate${this.id}`)
+                    deleteKeyframe(`play${this.id}`)
+                    callback()
+                    this.el.removeEventListener('animationend', removeAnimation)
+                }
+                this.el.addEventListener('animationend', removeAnimation)
+                this.id = Math.random().toString().slice(2,6)
+                addCSSRule(`.animate${this.id}{animation: play${this.id} ${duration};transform: translate3d(0)}`)
+                addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
+                this.el.classList.add(`animate${this.id}`)
+            }else{
+                animationList.push({
+                    cssText,
+                    duration,
+                    easing,
+                    callback
+                })
+                return this                
+            }
+        },
+        start() {
+            let len = animationList.length
+            if(len <= 0){
+                return
+            }
+            let i = 0,
+                fireAnimation = () => {
+                    if(animationList.length > 0){
+                        let {cssText, duration, easing, callback} = animationList[0]
+                        this.animate(false, cssText, duration, easing, callback)
+                        animationList.shift()
+                    }else{
+                        window.removeEventListener('animationend', fireAnimation)
+                    }
+                }
+            window.addEventListener('animationend', fireAnimation)
+            fireAnimation()
         }
     }
     function addCSSRule(rule) {
