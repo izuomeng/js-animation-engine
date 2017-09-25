@@ -31,12 +31,11 @@
             div = $(document.getElementById('a')),
             btn2 = document.getElementById('btn2')
         btn.onclick = function() {
-            div.animate(true, 'width: 200px;').animate(true, 'height: 300px').animate(true, 'width: 100px;').animate(true, 'height: 100px').start()
-        }
-        btn2.onclick = function() {
-            div.animate(false, 'width: 800px', '1s')
-            div.animate(false, 'height: 300px', '1s')
-            div.animate(false, 'background-color: green', '1s')
+            div.animate('width: 200px;')
+                .animate('height: 300px')
+                .animate('background-color: green')
+                .animate('width: 100px;')
+                .animate('height: 100px')
         }
     </script>
 </body>
