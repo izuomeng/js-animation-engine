@@ -24,18 +24,18 @@
     <input type="submit" id="btn">
     <input type="submit" id="btn2">
     <div id="a" class="b"></div>
-
+    <div id="c" class="b"></div>
     <script src="animation.js"></script>
     <script>
         let btn = document.getElementById('btn'),
             div = $(document.getElementById('a')),
-            btn2 = document.getElementById('btn2')
+            btn2 = document.getElementById('btn2'),
+            c = $(document.getElementById('c'))
         btn.onclick = function() {
-            div.animate('width: 200px;')
-                .animate('height: 300px')
-                .animate('background-color: green')
-                .animate('width: 100px;')
-                .animate('height: 100px')
+            div.hide(1, 'linear', c.hide.bind(c))
+        }
+        btn2.onclick = function() {
+            div.fadeTo(0.5, 1, 'linear', c.fadeTo.bind(c, 0.1))
         }
     </script>
 </body>
