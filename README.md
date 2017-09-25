@@ -2,7 +2,7 @@
 基于CSS3的js动画引擎
 
 #### 功能介绍：
-$(element):构造函数，elment为dom元素，返回新创建的动画对象，可直接调用下列的方法
+** $(element): **构造函数，elment为dom元素，返回新创建的动画对象，可直接调用下列的方法
 
 .animate(cssText [, duration ] [, easing ] [, callback ] ):类似于jq的animate自定义动画，第一个是字符串参数，cssText，要变形的css参数；
 duration（默认值1s），单独数字代表动画执行的秒数；easing是缓动函数，默认ease，值与css标准参数相同；callback为动画结束后执行的回调函数
