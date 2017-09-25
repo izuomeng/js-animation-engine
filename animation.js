@@ -96,6 +96,13 @@ let $ = (function() {
             if(!animationList.busy){
                 this.animate(`opacity:${op}`, duration, ease, callback)
             }
+        },
+        changePlayState() {
+            state = this.el.style.animationPlayState
+            this.el.style.animationPlayState = state === 'paused' ? 'running' : 'paused'
+        },
+        finish() {
+            animationList = []
         }
     }
     function addCSSRule(rule) {

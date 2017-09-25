@@ -21,8 +21,8 @@
     </style>
 </head>
 <body>
-    <input type="submit" id="btn">
-    <input type="submit" id="btn2">
+    <input type="submit" id="btn" value="fadeTo">
+    <input type="submit" id="btn2" value="transform">
     <div id="a" class="b"></div>
     <div id="c" class="b"></div>
     <script src="animation.js"></script>
@@ -30,12 +30,15 @@
         let btn = document.getElementById('btn'),
             div = $(document.getElementById('a')),
             btn2 = document.getElementById('btn2'),
-            c = $(document.getElementById('c'))
+            div2 = $(document.getElementById('c'))
         btn.onclick = function() {
-            div.hide(1, 'linear', c.hide.bind(c))
+            div2.fadeTo(0.2)
         }
         btn2.onclick = function() {
-            div.fadeTo(0.5, 1, 'linear', c.fadeTo.bind(c, 0.1))
+            div.animate('width: 200px')
+                .animate('height: 200px')
+                .animate('width: 100px')
+                .animate('height: 100px')
         }
     </script>
 </body>
