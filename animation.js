@@ -1,62 +1,50 @@
 let $ = (function() {
     let styleElement,
         animationList = []
+    animationList.busy = false
     function $(element) {
         if(this instanceof $){
-            if(typeof element === 'object'){
-                this.el = element
-            }
+            this.el = element
             this.id = Math.random().toString().slice(2,6)
+            this.isHide = false
         }else{
             return new $(element)
         }
     }
     $.prototype = {
         constructor: $,
-        animate(inQueue, cssText, duration = '1s', easing = 'ease', callback = ()=>{}) {
-            // 立即开始执行的动画
-            if(!inQueue){
-                let removeAnimation = () => {
-                    this.el.style.cssText += cssText
-                    this.clearStyle(this.id)
-                    callback()
-                    this.el.removeEventListener('animationend', removeAnimation)
-                }
-                this.el.addEventListener('animationend', removeAnimation)
-                this.id = Math.random().toString().slice(2,6)
-                let pre = getComputedStyle(this.el).animation,
-                    comma = pre.length <= 0 ? '' : `${pre},`,
-                    now = comma + `play${this.id} ${duration} ${easing}`
-                addCSSRule(`.animate${this.id}{animation: ${now};transform: translate3d(0)}`)
-                addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
-                this.el.classList.add(`animate${this.id}`)
-                console.log(getComputedStyle(this.el).animation)
-            }else{
-                animationList.push({    // 加入队列的动画
-                    cssText,
-                    duration,
-                    easing,
-                    callback
-                })
-                return this                
-            }
+        animate(cssText, duration = 1, easing = 'ease', callback = ()=>{}) {
+            // 加入队列的动画
+            animationList.push({    
+                cssText,
+                duration,
+                easing,
+                callback
+            })
+            this.start()
+            return this                
         },
-        animateOnece(cssText, duration = '1s', easing = 'ease', callback = ()=>{}) {
+        animateOnece(cssText, duration = 1, easing = 'ease', callback = ()=>{}) {
             let removeAnimation = () => {
                 this.el.style.cssText += cssText
                 this.clearStyle(this.id)
-                callback()
                 this.el.removeEventListener('animationend', removeAnimation)
+                animationList.busy = false
+                callback()
             }
             this.el.addEventListener('animationend', removeAnimation)
             this.id = Math.random().toString().slice(2,6)
-            addCSSRule(`.animate${this.id}{animation: play${this.id} ${duration} ${easing};transform: translate3d(0)}`)
+            addCSSRule(`.animate${this.id}{animation: play${this.id} ${duration}s ${easing};transform: translateZ(0)}`)
             addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
             this.el.classList.add(`animate${this.id}`)
+            animationList.busy = true
         },
         start() {
             let len = animationList.length
             if(len <= 0){
+                return
+            }
+            if(animationList.busy){
                 return
             }
             let fireAnimation = () => {
@@ -76,6 +64,45 @@ let $ = (function() {
             this.el.classList.remove(`animate${this.id}`)
             deleteCSSRule(`.animate${this.id}`)
             deleteKeyframe(`play${this.id}`)
+        },
+        hide(duration = 0.5, ease = 'ease', callback) {
+            if(animationList.busy){
+                return
+            }
+            if(!this.isHide){
+                this.animate('opacity: 0', duration, ease, callback)
+                setTimeout(()=>{
+                    this.el.style.display = 'none'
+                    this.isHide = true
+                }, duration * 1000)
+            }
+        },
+        show(duration = 0.5, ease = 'ease', callback) {
+            if(animationList.busy){
+                return
+            }
+            if(this.isHide){
+                this.el.style.display = ''
+                this.animate('opacity: 1', duration, ease, callback)
+                this.isHide = false
+            }
+        },
+        toggle(duration = 0.5, ease = 'ease', callback) {
+            if(!animationList.busy){
+                this.isHide ? this.show(duration, ease, callback) : this.hide(duration, ease, callback)
+            }
+        },
+        fadeTo(op, duration = 0.5, ease = 'ease', callback) {
+            if(!animationList.busy){
+                this.animate(`opacity:${op}`, duration, ease, callback)
+            }
+        },
+        changePlayState() {
+            state = this.el.style.animationPlayState
+            this.el.style.animationPlayState = state === 'paused' ? 'running' : 'paused'
+        },
+        finish() {
+            animationList = []
         }
     }
     function addCSSRule(rule) {

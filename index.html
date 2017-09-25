@@ -21,22 +21,24 @@
     </style>
 </head>
 <body>
-    <input type="submit" id="btn">
-    <input type="submit" id="btn2">
+    <input type="submit" id="btn" value="fadeTo">
+    <input type="submit" id="btn2" value="transform">
     <div id="a" class="b"></div>
-
+    <div id="c" class="b"></div>
     <script src="animation.js"></script>
     <script>
         let btn = document.getElementById('btn'),
             div = $(document.getElementById('a')),
-            btn2 = document.getElementById('btn2')
+            btn2 = document.getElementById('btn2'),
+            div2 = $(document.getElementById('c'))
         btn.onclick = function() {
-            div.animate(true, 'width: 200px;').animate(true, 'height: 300px').animate(true, 'width: 100px;').animate(true, 'height: 100px').start()
+            div2.fadeTo(0.2)
         }
         btn2.onclick = function() {
-            div.animate(false, 'width: 800px', '1s')
-            div.animate(false, 'height: 300px', '1s')
-            div.animate(false, 'background-color: green', '1s')
+            div.animate('width: 200px')
+                .animate('height: 200px')
+                .animate('width: 100px')
+                .animate('height: 100px')
         }
     </script>
 </body>
