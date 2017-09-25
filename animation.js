@@ -1,41 +1,38 @@
 let $ = (function() {
     let styleElement,
         animationList = []
-    function $(query) {
+    function $(element) {
         if(this instanceof $){
-            if(typeof query === 'string'){
-                try {
-                    this.el = document.querySelectorAll(query)
-                } catch (error) {
-                    throw new Error(error)
-                }
-            }else if(typeof query === 'object'){
-                this.el = query
+            if(typeof element === 'object'){
+                this.el = element
             }
             this.id = Math.random().toString().slice(2,6)
         }else{
-            return new $(query)
+            return new $(element)
         }
     }
     $.prototype = {
         constructor: $,
         animate(inQueue, cssText, duration = '1s', easing = 'ease', callback = ()=>{}) {
+            // 立即开始执行的动画
             if(!inQueue){
-                let removeAnimation = (event) => {
+                let removeAnimation = () => {
                     this.el.style.cssText += cssText
-                    this.el.classList.remove(`animate${this.id}`)
-                    deleteCSSRule(`.animate${this.id}`)
-                    deleteKeyframe(`play${this.id}`)
+                    this.clearStyle(this.id)
                     callback()
                     this.el.removeEventListener('animationend', removeAnimation)
                 }
                 this.el.addEventListener('animationend', removeAnimation)
                 this.id = Math.random().toString().slice(2,6)
-                addCSSRule(`.animate${this.id}{animation: play${this.id} ${duration};transform: translate3d(0)}`)
+                let pre = getComputedStyle(this.el).animation,
+                    comma = pre.length <= 0 ? '' : `${pre},`,
+                    now = comma + `play${this.id} ${duration} ${easing}`
+                addCSSRule(`.animate${this.id}{animation: ${now};transform: translate3d(0)}`)
                 addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
                 this.el.classList.add(`animate${this.id}`)
+                console.log(getComputedStyle(this.el).animation)
             }else{
-                animationList.push({
+                animationList.push({    // 加入队列的动画
                     cssText,
                     duration,
                     easing,
@@ -43,6 +40,19 @@ let $ = (function() {
                 })
                 return this                
             }
+        },
+        animateOnece(cssText, duration = '1s', easing = 'ease', callback = ()=>{}) {
+            let removeAnimation = () => {
+                this.el.style.cssText += cssText
+                this.clearStyle(this.id)
+                callback()
+                this.el.removeEventListener('animationend', removeAnimation)
+            }
+            this.el.addEventListener('animationend', removeAnimation)
+            this.id = Math.random().toString().slice(2,6)
+            addCSSRule(`.animate${this.id}{animation: play${this.id} ${duration} ${easing};transform: translate3d(0)}`)
+            addCSSRule(`@keyframes play${this.id}{100%{${cssText}}}`)
+            this.el.classList.add(`animate${this.id}`)
         },
         start() {
             let len = animationList.length
@@ -52,7 +62,7 @@ let $ = (function() {
             let fireAnimation = () => {
                     if(animationList.length > 0){
                         let {cssText, duration, easing, callback} = animationList[0]
-                        this.animate(false, cssText, duration, easing, callback)
+                        this.animateOnece(cssText, duration, easing, callback)
                         animationList.shift()
                     }else{
                         window.removeEventListener('animationend', fireAnimation)
@@ -60,6 +70,12 @@ let $ = (function() {
                 }
             window.addEventListener('animationend', fireAnimation)
             fireAnimation()
+        },
+        // 清除已经完成的keyframe和对应的类
+        clearStyle(id){
+            this.el.classList.remove(`animate${this.id}`)
+            deleteCSSRule(`.animate${this.id}`)
+            deleteKeyframe(`play${this.id}`)
         }
     }
     function addCSSRule(rule) {
